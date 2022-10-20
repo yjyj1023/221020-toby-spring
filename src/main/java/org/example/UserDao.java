@@ -1,5 +1,6 @@
 package org.example;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import user.User;
 
 import java.sql.*;
@@ -53,13 +54,18 @@ public class UserDao {
         //executeQuery: resultset객체에 결과집합 담기, 주로 select문에서 실행
         ResultSet rs = ps.executeQuery();
 
+        User user = null;
         //select문의 존재여부 확인(다음 행이 존재하면 true 리턴)
-        rs.next();
-        User user = new User(rs.getString("id"),
-                rs.getString("name"), rs.getString("password"));
+        if(rs.next()){
+            user = new User(rs.getString("id"),
+                    rs.getString("name"), rs.getString("password"));
+        }
+
         rs.close();
         ps.close();
         c.close();
+
+        if(user == null) throw new EmptyResultDataAccessException(1);
         return user;
     }
 
