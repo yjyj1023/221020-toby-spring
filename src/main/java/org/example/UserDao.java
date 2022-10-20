@@ -1,4 +1,5 @@
 package org.example;
+
 import user.User;
 
 import java.sql.*;
@@ -6,11 +7,12 @@ import java.util.Map;
 
 public class UserDao {
     private ConnectionMaker connectionMaker;
-    public UserDao()
-    {
+
+    public UserDao() {
         this.connectionMaker = new AWSConnectionMaker();
     }
-    public UserDao(ConnectionMaker connectionMaker){
+
+    public UserDao(ConnectionMaker connectionMaker) {
 
         this.connectionMaker = new AWSConnectionMaker();
     }
@@ -61,9 +63,36 @@ public class UserDao {
         return user;
     }
 
+    public void deleteAll() throws SQLException, ClassNotFoundException {
+        Connection c = connectionMaker.getConnection();
+
+        PreparedStatement ps = c.prepareStatement("delete from users");
+
+        ps.executeUpdate();
+        ps.close();
+        c.close();
+    }
+
+    public int getCount() throws SQLException, ClassNotFoundException {
+        Connection c = connectionMaker.getConnection();
+
+        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt(1);
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        return count;
+    }
+
+
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         UserDao userDao = new UserDao();
-        userDao.add(new User("15","Ruru","1534qwer"));
+        userDao.add(new User("15", "Ruru", "1534qwer"));
 //        User user = userDao.get("1");
 //        System.out.println(user.getName());
 
